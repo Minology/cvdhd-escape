@@ -21,6 +21,8 @@ class GeoPrep:
         self.pixelHeight = -transform[5]
         self.subsum = np.zeros((len(data),len(data[0])), dtype=float)
         self.cntdata = np.zeros((len(data),len(data[0])), dtype=int)
+        # print(self.subsum.shape)
+        # print(self.yOrigin)
         self.data = data
         self.doclass=doclass
 
@@ -106,7 +108,7 @@ class GeoPrep:
 
     def find(self,x,y,xd,yd,radius):
         l=0
-        r=800
+        r=40
         while (l<=r):
             md=(l+r)//2
             xx=x+xd*md
@@ -123,8 +125,8 @@ class GeoPrep:
         return x+xd*r, y+yd*r
 
     def findAroundRadius(self, lat, lon, radius):
-        col = int((lat - self.xOrigin) / self.pixelWidth)
-        row = int((self.yOrigin - lon) / self.pixelHeight)
+        row = int((self.yOrigin - lat) / self.pixelHeight)
+        col = int((lon - self.xOrigin) / self.pixelWidth)
         # print(row, col)
 
         tlx=self.find(row, col, -1, 0, radius)[0]
@@ -151,11 +153,12 @@ if __name__ == '__main__':
     solver = GeoPrep('../sample data/map/landCover2019wgs84.tif', doclass=[40,50])
     # getsubcnt(lat,lon,rad)
     # get count of something in a radius of rad (meters), around position at (lat,lon)
-    print(solver.getsubcnt(100.10001+0.025*2, 25.60001, 5000))
+    print(solver.getsubcnt(25.60001, 100.10001+0.025*2, 5000))
+    print(solver.getsubcnt(21.0491, 105.8831, 5000))
 
     # ----- other feature use case
     solver = GeoPrep('../sample data/map/S5P_NO2_20190101.tif')
-    # getsubavg(lat,lon,rad)
-    # get average of something in a radius of rad (meters), around position at (lat,lon)
-    print(solver.getsubavg(100.10001+0.025*2, 25.60001, 5000))
-    # print(solver.calculateDistance(0,0,1,0))
+    # # getsubavg(lat,lon,rad)
+    # # get average of something in a radius of rad (meters), around position at (lat,lon)
+    print(solver.getsubavg(25.60001, 100.10001+0.025*2, 5000))
+    print(solver.calculateDistance(0,0,1,0))
