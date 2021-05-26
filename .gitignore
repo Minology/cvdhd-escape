@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 data/test/
+data/s5p_no2/
+output/
