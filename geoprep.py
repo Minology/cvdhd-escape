@@ -33,6 +33,15 @@ class GeoPrep:
         # print(data[1][2])
         # print(data[1][3])
         if doclass == -1:
+            sum_val = 0
+            cnt_val = 0
+            for i in range(self.subsum.shape[0]):
+                for j in range(self.subsum.shape[1]):       
+                    if self.isData(i,j):
+                        sum_val += data[i][j]
+                        cnt_val += 1     
+
+
             for i in range(self.subsum.shape[0]):
                 for j in range(self.subsum.shape[1]):
                     self.cntdata[i][j]=self.getCnt(i,j-1)+self.getCnt(i-1,j)-self.getCnt(i-1,j-1)
@@ -40,6 +49,9 @@ class GeoPrep:
                     if self.isData(i,j):
                         self.cntdata[i][j] += 1
                         self.subsum[i][j] += data[i][j]
+                    else:
+                        self.cntdata[i][j] += 1
+                        self.subsum[i][j] += 1.0 * sum_val / cnt_val
         else:
             for i in range(self.subsum.shape[0]):
                 for j in range(self.subsum.shape[1]):
@@ -150,14 +162,15 @@ class GeoPrep:
 
 if __name__ == '__main__':
     # ----- land cover use case for a list of classes. any cell that has value in doclass will be counted
-    solver = GeoPrep('../sample data/map/landCover2019wgs84.tif', doclass=[40,50])
-    # getsubcnt(lat,lon,rad)
-    # get count of something in a radius of rad (meters), around position at (lat,lon)
-    print(solver.getsubcnt(25.60001, 100.10001+0.025*2, 5000))
-    print(solver.getsubcnt(21.0491, 105.8831, 5000))
+    # solver = GeoPrep('../sample data/map/landCover2019wgs84.tif', doclass=[40,50])
+    # # getsubcnt(lat,lon,rad)
+    # # get count of something in a radius of rad (meters), around position at (lat,lon)
+    # print(solver.getsubcnt(25.60001, 100.10001+0.025*2, 5000))
+    # print(solver.getsubcnt(21.0491, 105.8831, 5000))
 
     # ----- other feature use case
-    solver = GeoPrep('../sample data/map/S5P_NO2_20190101.tif')
+    # solver = GeoPrep('../sample data/map/S5P_NO2_20190101.tif')
+    solver = GeoPrep('../sample data/map/planetary boundary layer height[pblh]/HPBLCombine_20190101.tif')
     # # getsubavg(lat,lon,rad)
     # # get average of something in a radius of rad (meters), around position at (lat,lon)
     print(solver.getsubavg(25.60001, 100.10001+0.025*2, 5000))
