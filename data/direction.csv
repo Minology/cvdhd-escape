@@ -35,9 +35,9 @@ Open_forest_9000,0
 "Oceans,seas_3000",0
 "Oceans,seas_6000",0
 "Oceans,seas_9000",0
-NDVI_3000,1
-NDVI_6000,1
-NDVI_9000,1
+NDVI_3000,0
+NDVI_6000,0
+NDVI_9000,0
 S5P_NO2_3000,1
 S5P_NO2_6000,1
 S5P_NO2_9000,1
@@ -53,9 +53,9 @@ relative_humidity_9000,1
 pressure_3000,0
 pressure_6000,0
 pressure_9000,0
-planetary_boundary_layer_height[pblh]_3000,1
-planetary_boundary_layer_height[pblh]_6000,1
-planetary_boundary_layer_height[pblh]_9000,1
+planetary_boundary_layer_height[pblh]_3000,0
+planetary_boundary_layer_height[pblh]_6000,0
+planetary_boundary_layer_height[pblh]_9000,0
 dewpoint_temperature_(dpt)_3000,1
 dewpoint_temperature_(dpt)_6000,1
 dewpoint_temperature_(dpt)_9000,1
