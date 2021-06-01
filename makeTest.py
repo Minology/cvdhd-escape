@@ -5,7 +5,10 @@ from geoprep import GeoPrep
 import csv
 from testadd import find_nearest, findnearestDPT, fixedate
 
-Date = 20190515
+# change the date here
+Date = 20190820
+
+
 # handle all solvers
 solverNDVI = GeoPrep("sample data/map/normalized difference vegetation index[NDVI]/MOD13Q1_{}_Ndvi.tif".format(find_nearest("normalized difference vegetation index[NDVI]",Date)))
 solverS5P = GeoPrep("sample data/map/S5P NO2/S5P_NO2_{}.tif".format(find_nearest("S5P NO2",Date)))
