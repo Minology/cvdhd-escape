@@ -4,6 +4,7 @@ from addLandUse import addLandcoverFeatures
 from addOthers import addOFeatureAllBuffer
 from addDPTandDen import addDPTAllBuffer, addDensityAllBuffer
 import csv
+import shutil
 
 if __name__ == '__main__': 
     
@@ -86,7 +87,9 @@ if __name__ == '__main__':
                         'sample data/map/population density/vnm_ppp_2019_resampled3km.tif')
     
     
-    
+    original = "sample data/station/fixed3.csv".format()
+    target = "data/train.csv".format()
+    shutil.move(original,target)
 
 
 

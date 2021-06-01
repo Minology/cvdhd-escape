@@ -4,9 +4,10 @@ from addLandUse import addLandcoverFeatures, copyReadtoWrite
 from geoprep import GeoPrep
 import csv
 from testadd import find_nearest, findnearestDPT, fixedate
+import shutil
 
 # change the date here
-Date = 20190820
+Date = 20190915 
 
 
 # handle all solvers
@@ -17,7 +18,6 @@ solverWind = GeoPrep("sample data/map/wind speed/WSPDCombine_{}.tif".format(find
 solverHumid = GeoPrep("sample data/map/relative humidity/RHCombine_{}.tif".format(find_nearest("relative humidity", Date)))
 solverPressure = GeoPrep("sample data/map/pressure/PRESSCombine_{}.tif".format(find_nearest("pressure", Date)))
 solverpblh = GeoPrep("sample data/map/planetary boundary layer height[pblh]/HPBLCombine_{}.tif".format(find_nearest("planetary boundary layer height[pblh]", Date)))
-#solverDPT = GeoPrep("sample data/map/dewpoint temperature (dpt)/DPT_20191115_18.tif")
 solverRoadDen = GeoPrep("sample data/map/road density/road_dens.tif")
 solverPopulationDen = GeoPrep("sample data/map/population density/vnm_ppp_2019_resampled3km.tif")
 
@@ -30,7 +30,6 @@ DictFeatures = {
         "relative_humidity_": solverHumid,
         "pressure_": solverPressure,
         "planetary_boundary_layer_height[pblh]_": solverpblh,
-        #"dewpoint_temperature_(dpt)_": solverDPT,
         "road_density_": solverRoadDen,
         "population_density_": solverPopulationDen
 }
@@ -115,6 +114,9 @@ if __name__ == '__main__':
             for r in reader:
                 writer.writerow((r[1:]))
     
+    original = "sample data/station/test{}.csv".format(Date)
+    target = "data/test{}.csv".format(Date)
+    shutil.move(original,target)    
 
 
     
