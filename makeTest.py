@@ -7,7 +7,7 @@ from testadd import find_nearest, findnearestDPT, fixedate
 import shutil
 
 # change the date here
-Date = 20190915 
+Date = 20191231
 
 
 # handle all solvers
@@ -115,7 +115,7 @@ if __name__ == '__main__':
                 writer.writerow((r[1:]))
     
     original = "sample data/station/test{}.csv".format(Date)
-    target = "data/test{}.csv".format(Date)
+    target = "data/test/test{}.csv".format(Date)
     shutil.move(original,target)    
 
 
