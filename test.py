@@ -8,6 +8,7 @@ import sys
 import getopt
 
 MODEL = "Linear Regression"
+CLIPPING_MODE = 0
 
 def lat_to_x(lat):
     return (25.6 - lat) / 0.025
@@ -69,13 +70,20 @@ def test_date(date):
     for i in range(len(no2)):
         lat, lon = test_locations[i]
         x, y = lat_to_x(lat), lon_to_y(lon)
-        array[round(x)][round(y)] = no2[i]
+        if CLIPPING_MODE == 0:
+            array[round(x)][round(y)] = no2[i]
+        else:
+            array[round(x)][round(y)] = max(no2[i], 0)
         
     NDV, xsize, ysize, GeoT, Projection, DataType = GetGeoInfo(templateFilePath)
     # Set up the GTiff driver
     driver = gdal.GetDriverByName('GTiff')
-    outputFile = CreateGeoTiff(f'output/NO2_{date}.tif',
-                               array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
+    if CLIPPING_MODE == 0:
+        outputFile = CreateGeoTiff(f'output/NO2_{date}.tif',
+                                   array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
+    else:
+        outputFile = CreateGeoTiff(f'output/NO2_{date}_clipped.tif',
+                                   array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
     return array
 
 if __name__ == "__main__":
@@ -87,20 +95,26 @@ if __name__ == "__main__":
         argv = argv[1:]
     
     try:
-        opts, args = getopt.getopt(argv,'hm:', ['model='])
+        opts, args = getopt.getopt(argv,'hcm:', ['model='])
     except getopt.GetoptError:
-        print('test.py <yyyyMMdd> -m <modelname>')
+        print('Usage: test.py <yyyyMMdd> -c -m <modelname>')
+        print('Use -c option for clipping')
         sys.exit(2)
         
     for opt, arg in opts:
         if opt == '-h':
-            print('test.py <yyyyMMdd> -m <modelname>')
+            print('Usage: test.py <yyyyMMdd> -c -m <modelname>')
+            print('Use -c option for clipping')
             sys.exit()
+        elif opt == '-c':
+            CLIPPING_MODE = 1
         elif opt in ("-m", "--model"):
-            if arg == "Linear Regression":
-                model_name = "linear_regression"
-            else:
-                model_name = "linear_regression"
+            MODEL = arg
+    
+    if MODEL == "Linear Regression":
+        model_name = "linear_regression"
+    else:
+        model_name = "linear_regression"
     
     with open(f'models/{model_name}.pkl', 'rb') as model_file:
         model_info = pickle.load(model_file)
