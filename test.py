@@ -8,6 +8,7 @@ import sys
 import getopt
 
 MODEL = "Linear Regression"
+METEOROLOGY_MODE = 1
 CLIPPING_MODE = 0
 
 def lat_to_x(lat):
@@ -64,26 +65,38 @@ def test_date(date):
     array = ReadGeoTiff(templateFilePath)
     
     array = np.full(array.shape, np.nan)
-    test_data = pd.read_csv(f'data/test/test{date}.csv')
-    no2 = model.predict(test_data[features])
+    test_data = pd.read_csv(f'data/test/map{date}.csv')
+    
     test_locations = test_data[['lat', 'lon']].to_numpy()
+    test_data[features] = scaler.fit_transform(test_data[features])
+    no2 = model.predict(test_data[chosen_features])
     for i in range(len(no2)):
         lat, lon = test_locations[i]
         x, y = lat_to_x(lat), lon_to_y(lon)
-        if CLIPPING_MODE == 0:
-            array[round(x)][round(y)] = no2[i]
-        else:
-            array[round(x)][round(y)] = max(no2[i], 0)
+        # Crop image
+        minx = 82
+        maxx = 700
+        miny = 35
+        maxy = 388
+        if minx <= x <= maxx and miny <= y <= maxy:
+            if CLIPPING_MODE == 0:
+                array[round(x)][round(y)] = no2[i]
+            else:
+                array[round(x)][round(y)] = max(no2[i], 0)
         
     NDV, xsize, ysize, GeoT, Projection, DataType = GetGeoInfo(templateFilePath)
     # Set up the GTiff driver
     driver = gdal.GetDriverByName('GTiff')
-    if CLIPPING_MODE == 0:
-        outputFile = CreateGeoTiff(f'output/NO2_{date}.tif',
+    if METEOROLOGY_MODE == 1:
+        outputFile = CreateGeoTiff(f'output/NO2_{date}_meteorology.tif',
                                    array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
     else:
-        outputFile = CreateGeoTiff(f'output/NO2_{date}_clipped.tif',
-                                   array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
+        if CLIPPING_MODE == 0:
+            outputFile = CreateGeoTiff(f'output/NO2_{date}.tif',
+                                       array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
+        else:
+            outputFile = CreateGeoTiff(f'output/NO2_{date}_clipped.tif',
+                                       array, driver, NDV, xsize, ysize, GeoT, Projection, DataType)
     return array
 
 if __name__ == "__main__":
@@ -95,17 +108,21 @@ if __name__ == "__main__":
         argv = argv[1:]
     
     try:
-        opts, args = getopt.getopt(argv,'hcm:', ['model='])
+        opts, args = getopt.getopt(argv,'hfcm:', ['model='])
     except getopt.GetoptError:
-        print('Usage: test.py <yyyyMMdd> -c -m <modelname>')
+        print('Usage: python test.py <yyyyMMdd> -f -c -m <modelname>')
+        print('Use -f option to use all features, not just meteorological ones')
         print('Use -c option for clipping')
         sys.exit(2)
         
     for opt, arg in opts:
         if opt == '-h':
-            print('Usage: test.py <yyyyMMdd> -c -m <modelname>')
+            print('Usage: python test.py <yyyyMMdd> -f -c -m <modelname>')
+            print('Use -f option to use all features, not just meteorological ones')
             print('Use -c option for clipping')
             sys.exit()
+        elif opt == '-f':
+            METEOROLOGY_MODE = 0
         elif opt == '-c':
             CLIPPING_MODE = 1
         elif opt in ("-m", "--model"):
@@ -116,13 +133,19 @@ if __name__ == "__main__":
     else:
         model_name = "linear_regression"
     
-    with open(f'models/{model_name}.pkl', 'rb') as model_file:
-        model_info = pickle.load(model_file)
+    if METEOROLOGY_MODE == 0:
+        with open(f'models/{model_name}.pkl', 'rb') as model_file:
+            model_info = pickle.load(model_file)
+    else:
+        with open(f'models/{model_name}_meteorology.pkl', 'rb') as model_file:
+            model_info = pickle.load(model_file)
         
     features = model_info['features']
+    chosen_features = model_info['chosen_features']
+    scaler = model_info['scaler']
     model = model_info['model']
     output = test_date(date)
     
-    #import matplotlib.pyplot as plt
-    #plt.imshow(output)
-    #plt.show(block=True)
+#     import matplotlib.pyplot as plt
+#     plt.imshow(output)
+#     plt.show(block=True)
