@@ -1,6 +1,5 @@
 import os
-from osgeo import gdal
-from addLandUse import addLandcoverFeatures, copyReadtoWrite
+from train.addLandUse import addLandcoverFeatures, copyReadtoWrite
 from geoprep import GeoPrep
 import csv
 from testadd import find_nearest, findnearestDPT, fixedate
@@ -89,7 +88,7 @@ if __name__ == '__main__':
                 testWriter.writerow([fixedate(Date),25.6 - m*0.025, 100.1 + n*0.025]) #fix
     
     for i in range (1,4):
-        path = 'sample data/station'
+        path = '../sample data/station'
         with open(os.path.join(path, 'test{}.csv'.format(i)), 'w') as fp:
             pass
     

@@ -9,7 +9,7 @@ import shutil
 if __name__ == '__main__': 
     
     for i in range (1,4):
-        path = 'sample data/station'
+        path = '../sample data/station'
         with open(os.path.join(path, 'fixed{}.csv'.format(i)), 'w') as fp:
             pass
     
